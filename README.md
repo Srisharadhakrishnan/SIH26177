@@ -1,169 +1,133 @@
-# RESQ DRONE — AI-Powered Autonomous Search & Rescue System
+# JEEVAN-AIR — Aerial Intelligence & Rescue
 
-> **Smart India Hackathon (SIH) Prototype | Problem Statement ID: SIH26177**  
+> **Smart India Hackathon 2026 | Problem Statement ID: SIH26177**  
+> **Organization:** Qualcomm Inc | **Category:** Hardware | **Theme:** Robotics and Drones  
+> **Team:** TEAM ZYNTAX  
+> **Tagline:** *DETECT. ASSESS. PRIORITIZE. RESCUE.*  
 > *"A deployable AI-powered autonomous drone that aids search-and-rescue operations by detecting people and hazards, thereby improving responder safety and reducing victim discovery time."*
 
 ---
 
-## 1. Project Title & Subtitle
+## 1. Project Overview & Current Prototype Status
 
-**RESQ DRONE**  
-*AI-Powered Autonomous Search & Rescue System*
+**JEEVAN-AIR** is an aerial intelligence and emergency response command system designed to accelerate victim location, assess danger zones, prioritize extractions, and guide ground responders through disaster areas safely.
 
----
+### ⚠️ Prototype Disclosure & Technical Honesty Guarantee
 
-## 2. SIH Problem Statement
-
-- **Problem ID:** SIH26177
-- **Problem Category:** Disaster Management / AI & Robotics / Public Safety
-- **Description:** Rapid victim localization and secondary hazard detection during catastrophic events (floods, structural collapses, landslides) are critical for emergency response teams. RESQ DRONE demonstrates an end-to-end aerial search-and-rescue operational workflow that cuts down victim discovery time while shielding responders from unexpected environmental threats.
+- **Current Prototype State:** Software Prototype & Web Command Center (Phase 1).
+- **Physical Drone Hardware:** Currently **NOT** connected.
+- **Telemetry & Sensors:** Flight controller, GNSS GPS, 4K optical/LWIR thermal video feeds, and battery levels are **SIMULATED** via a dedicated `SimulationDataProvider`.
+- **Credibility Note:** All simulated data is clearly labeled in the interface (`SIMULATED FLIGHT TELEMETRY`, `SIMULATED SENSOR STREAM`, `SOFTWARE PROTOTYPE`) so judges and evaluators know exactly where software boundaries end and physical hardware integration begins in Phase 4.
 
 ---
 
-## 3. Project Objective
+## 2. Core Architecture: Common Data Model & Data Adapter
 
-The core objective of RESQ DRONE is to demonstrate a mission-critical emergency command and monitoring workflow:
-1. **Autonomous Search Grid Coverage:** Plan and execute deterministic lawn-mower search trajectories over disaster sectors.
-2. **AI-Driven Victim Localization:** Detect human silhouettes in floodwaters and rubble with real-time confidence scores and coordinates.
-3. **Hazard Risk Mitigation:** Classify environmental threats (fires, gas/thermal hotspots, structural collapses, debris) to establish ground responder safety zones.
-4. **Human-in-the-Loop Incident Verification:** Provide emergency dispatchers with immediate review, verification, and location-focus capabilities.
+In Phase 1, data generation was decoupled from the React UI into a clean **Data Adapter Layer**:
+
+```
+[ Simulation Source ]  ──►  [ SimulationDataProvider ]
+                                       │
+                                       ▼ (implements IDataAdapter)
+                             [ Common Data Model ]
+                           (DroneState, Telemetry,
+                         Detection, Survivor, Hazard,
+                              Alert, MissionState)
+                                       │
+                                       ▼
+                             [ Application State ]
+                             (MissionContext.tsx)
+                                       │
+                                       ▼
+                           [ JEEVAN-AIR Dashboard ]
+                  (Header, Sidebar, Map, Feed, Telemetry, Alerts)
+```
+
+### Future Hardware Bridge (Phase 4 Ready)
+
+When physical drone hardware is integrated, a `HardwareDataProvider` connects via MAVLink 2.0 / WebSockets without requiring any changes to the UI dashboard or common models:
+
+```
+[ Physical Drone: Pixhawk + Jetson + u-blox ]  ──►  [ HardwareDataProvider ]  ──►  [ Common Data Model ]  ──►  [ Dashboard ]
+```
 
 ---
 
-## 4. Key Features
+## 3. Technology Stack
 
-- **Autonomous 3×3 Search Grid Simulation:** Structured grid sweep (`A1 → A2 → A3 → B3 → B2 → B1 → C1 → C2 → C3`) with live waypoint tracking, progress meters, and sector states.
-- **Deterministic 60–90s Demo Mode:** One-click presentation mode designed specifically for hackathon judging panels to reliably demonstrate the entire detection and alert lifecycle.
-- **AI Vision Feed Simulator:** 4K optical and LWIR thermal camera stream simulation with real-time YOLOv8 bounding box overlays, confidence badges, and thermal signatures.
-- **Custom Vector Map:** Independent interactive map displaying active drone position, flight route breadcrumbs, victim markers, and hazard danger zones without external API dependencies.
-- **Emergency Alert Center:** Chronological, priority-sorted incident queue with quick responder actions (`MARK VERIFIED`, `DISMISS`, `VIEW LOCATION`).
-- **Interactive Detections & Hazard Analytics:** Filterable tables, modal inspections, sensor readings, and damage assessments.
-- **Manual Flight Override:** Tactical operator intervention toggle allowing manual control pause and return-to-autonomous flight.
-- **Telemetry & Subsystem Matrix:** Transparent system status tracking all software modules and prototype boundaries.
-
----
-
-## 5. Technology Stack
-
-- **Frontend Framework:** React 18 with TypeScript
+- **Frontend Framework:** React 18 with TypeScript 5
 - **Build Tool:** Vite 5
-- **Styling:** Tailwind CSS (Dark Command-Center Tactical UI)
+- **Styling:** Tailwind CSS 3 (Dark Aerospace / Tactical Command Palette)
 - **Icons:** Lucide React
-- **Architecture:** Modular React Context state engine (`MissionContext`)
+- **Architecture:** `IDataAdapter` pattern + `MissionContext` state management
+- **Data Models:** Typed Common Data Model (`src/types/common.ts`)
 
 ---
 
-## 6. Installation
+## 4. Key Features (Preserved in Phase 1)
+
+1. **Autonomous 3×3 Search Grid Simulation:** Structured grid sweep (`A1 → A2 → A3 → B3 → B2 → B1 → C1 → C2 → C3`) with live waypoint tracking, progress meters, and sector states.
+2. **Deterministic 60–75s Demo Mode:** One-click presentation mode designed specifically for hackathon judging panels to reliably demonstrate the entire detection and alert lifecycle.
+3. **AI Vision Feed Simulator:** 4K optical and LWIR thermal camera stream simulation with real-time YOLOv8 bounding box overlays, confidence badges, and thermal signatures.
+4. **Interactive Sector Grid Map:** Vector map displaying active drone position, flight route breadcrumbs, victim markers, and hazard danger zones without external API dependencies.
+5. **Emergency Alert Center:** Chronological, priority-sorted incident queue with quick responder actions (`MARK VERIFIED`, `DISMISS`, `VIEW LOCATION`).
+6. **Manual Flight Override:** Tactical operator intervention toggle allowing manual control pause and return-to-autonomous flight.
+7. **Interactive Detections & Hazard Analytics:** Filterable tables, modal inspections, sensor readings, and damage assessments.
+8. **Subsystem Disclosure Matrix:** Transparent system status tracking all software modules and prototype boundaries.
+
+---
+
+## 5. Installation & Running
 
 Ensure Node.js (v18 or later) and npm are installed on your workstation.
 
 ```bash
-# 1. Clone or open the repository
+# 1. Clone repository
 git clone https://github.com/Srisharadhakrishnan/SIH26177.git
 cd SIH26177
 
 # 2. Install dependencies
 npm install
-```
 
----
-
-## 7. How to Run
-
-```bash
-# Start the local development server
+# 3. Start development server
 npm run dev
+# Open http://localhost:5173
 
-# Open http://localhost:5173 in your browser
-```
+# 4. Run Rescue Intelligence Test Suite (15 Test Cases, 24 Assertions)
+npm test
 
-To build for production verification:
-```bash
+# 5. Production build verification
 npm run build
 npm run preview
 ```
 
 ---
 
-## 8. How to Use Demo Mode (Presentation Guide)
+## 6. How to Use Demo Mode (Judge Presentation Guide)
 
 1. Click the prominent **`DEMO MODE`** button in the header or on the dashboard.
-2. **Step 1:** The mission automatically resets and launches an autonomous sweep from Zone `A1`.
-3. **Step 2:** The drone moves through sectors updating search progress and telemetry.
-4. **Step 3:** Upon entering Sector `B3`, a **`PERSON` (94% confidence)** victim is detected. A bounding box appears in the live camera feed and a high-priority red alert triggers.
-5. **Step 4:** The victim pin appears on the 3×3 search map and increments the dashboard victim counter.
-6. **Step 5:** In Sector `C2`, a **`Fire` hazard (89% confidence)** is flagged, generating a secondary risk alert and map pin.
-7. **Step 6:** Use **`MARK VERIFIED`** or **`VIEW LOCATION`** to demonstrate responder interaction.
+2. **Step 1:** The mission resets and launches an autonomous sweep from Zone `A1`.
+3. **Step 2:** The drone sweeps sectors updating search progress, battery, and telemetry.
+4. **Step 3:** Upon entering Sector `B3`, a **`PERSON` (94% confidence)** victim is detected.
+5. **Step 4 (Phase 2 Intelligence):** The **Rescue Intelligence Engine** executes:
+   - Evaluates lack of movement, trapped status, and thermal infrared verification.
+   - Computes transparent risk score (**CRITICAL: 88/100**).
+   - Ranks the victim as **Rescue Priority #1**.
+   - Calculates **Recommended Safe-Access Route** (`A1 → A2 → B2 → B3`, bypassing fire obstacles).
+   - Dynamically adapts mission objective: `PRIORITY REPLAN: Monitor & guide responder approach`.
+6. **Step 5:** In Sector `C2`, an active **`Fire` hazard** is flagged, triggering spatial proximity recalculation and map corridor rerouting.
+7. **Step 6:** Click **`+ UNCERTAIN (2ND-LOOK)`** in Mission Controls to demonstrate the **Autonomous Second-Look Verification** workflow.
 
 ---
 
-## 9. What is Simulated (Technical Transparency)
+## 7. Development Roadmap
 
-To maintain absolute technical honesty:
-
-| Subsystem | Prototype State | Details |
-| :--- | :--- | :--- |
-| **Drone Flight Controller** | **SIMULATED** | Flight coordinates and lawnmower route are mathematically generated. No physical autopilot is connected. |
-| **GPS / GNSS Module** | **SIMULATED** | Coordinates (13.0827° N, 80.2707° E) are simulated and mapped to the 3x3 search sectors. |
-| **Camera Payload** | **SIMULATED** | Downlink video is a synthetic tactical feed demonstrating optical and thermal LWIR overlay modes. |
-| **Wireless Telemetry** | **SIMULATED** | MAVLink packets and RF signal latency are simulated locally in memory. |
-| **AI Inference** | **SIMULATED** | Bounding box coordinates and confidence ratings follow deterministic disaster scenarios for rock-solid demo reliability. |
+- **Phase 1 (Completed):** Software Prototype Foundation, JEEVAN-AIR Branding, Common Data Model, and Simulation Data Adapter.
+- **Phase 2 (Completed):** Rescue Intelligence Layer (Explainable Risk Assessment, Operational Prioritization, Autonomous Second-Look Verification, Ground Safe-Access Guidance, Dynamic Mission Replanning, Decision Timeline).
+- **Phase 3 (Upcoming):** Sensor & Map Visualization Upgrade (Continuous spatial coordinate rendering, dual-sensor optical/LWIR switching).
+- **Phase 4:** Hardware Integration (MAVLink 2.0 telemetry bridge, Pixhawk 6C autopilot, Jetson edge AI inference).
+- **Phase 5:** Field Testing & Validation (End-to-end disaster drill evaluation).
 
 ---
 
-## 10. Current Limitations
-
-- Software-only prototype running on client hardware (MacBook / desktop).
-- No physical drone hardware (motors, ESCs, airframe, batteries) connected.
-- Real-world sensor noise and aerodynamic turbulence are not yet modeled.
-
----
-
-## 11. Proposed Hardware Integration (Stage 2 Roadmap)
-
-```
-[4K Optical / LWIR Thermal Camera]
-                 │ (CSI / USB 3.0)
-                 ▼
-[Onboard Edge Computer: Raspberry Pi 5 / NVIDIA Jetson Orin Nano]
-       │ (MAVLink over UART)                 │ (Inference Output)
-       ▼                                     ▼
-[Pixhawk 6C Flight Controller]         [Long-Range RF Telemetry: 915MHz / Wi-Fi Mesh]
-       │ (PWM / CAN)                         │ (Wireless Downlink)
-       ▼                                     ▼
-[Motors & GPS: u-blox NEO-M8N]         [RESQ DRONE Web Command Center Dashboard]
-```
-
----
-
-## 12. Future Development
-
-- **Hardware Testing:** Deploying YOLOv8 nano models on Raspberry Pi 5 with Coral Edge TPU / Jetson Orin.
-- **Swarm Coordination:** Multi-drone collaborative search partitioning larger geographical sectors.
-- **Thermal Body Heat Localization:** Deep-learning based human body heat segmentation for zero-visibility night search.
-
----
-
-## 13. System Architecture & Workflow
-
-```
-DISASTER AREA
-      ↓
-AUTONOMOUS DRONE (Aerial Sweep)
-      ↓
-ONBOARD CAMERA (Optical & LWIR Thermal)
-      ↓
-AI INFERENCE (YOLOv8 Victim / Hazard Classification)
-      ↓
-GPS GEOTAGGING (Sector Localization)
-      ↓
-WIRELESS TELEMETRY (Ground Station Downlink)
-      ↓
-RESCUE DASHBOARD (Real-Time HUD & Interactive Map)
-      ↓
-HUMAN RESPONDER DECISION (Verification & Ground Team Extraction)
-```
-
----
-
-*Built with ❤️ for Smart India Hackathon (SIH).*
+*JEEVAN-AIR — Built with ❤️ by TEAM ZYNTAX for Smart India Hackathon 2026.*

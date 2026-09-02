@@ -1,0 +1,985 @@
+#!/usr/bin/env python3
+"""
+Build the complete 35-section HTML source for JEEVAN-AIR_Software_Documentation.pdf
+"""
+
+import os
+
+html_path = "/Users/sheshagiri/jeevan air/docs/doc_pdf_source.html"
+
+# We will generate a structured, highly styled HTML document
+content = """<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>JEEVAN-AIR Software Documentation</title>
+<style>
+@page {
+  size: A4 portrait;
+  margin: 16mm 14mm 16mm 14mm;
+  @bottom-right {
+    content: "Page " counter(page);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 8pt;
+    color: #64748b;
+  }
+  @bottom-left {
+    content: "JEEVAN-AIR (SIH26177) • Team ZYNTAX • Technical Documentation";
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 8pt;
+    color: #64748b;
+  }
+}
+
+* { box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #1e293b;
+  line-height: 1.5;
+  font-size: 9pt;
+}
+
+/* Cover Page */
+.cover-page {
+  page-break-after: always;
+  height: 98vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 40px 30px;
+  background: linear-gradient(145deg, #090e17 0%, #0f172a 50%, #1e293b 100%);
+  color: #f8fafc;
+  border-radius: 12px;
+  border: 2px solid #334155;
+}
+.cover-top {
+  border-bottom: 2px solid #0284c7;
+  padding-bottom: 20px;
+}
+.cover-badge {
+  display: inline-block;
+  background: #0284c7;
+  color: #ffffff;
+  padding: 5px 14px;
+  border-radius: 6px;
+  font-weight: 800;
+  font-size: 9pt;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 15px;
+}
+.cover-title {
+  font-size: 32pt;
+  font-weight: 900;
+  color: #38bdf8;
+  letter-spacing: -0.5px;
+  margin: 0;
+  line-height: 1.1;
+}
+.cover-subtitle {
+  font-size: 14pt;
+  color: #94a3b8;
+  font-weight: 500;
+  margin-top: 6px;
+}
+.cover-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 24px 0;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid #334155;
+  border-radius: 10px;
+  padding: 20px;
+}
+.cover-meta-item {
+  display: flex;
+  flex-direction: column;
+}
+.meta-label {
+  font-size: 8pt;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+.meta-val {
+  font-size: 11pt;
+  font-weight: 800;
+  color: #f1f5f9;
+  margin-top: 3px;
+}
+.meta-val.cyan { color: #38bdf8; }
+.meta-val.emerald { color: #34d399; }
+.meta-val.amber { color: #fbbf24; }
+
+.cover-disclaimer {
+  background: rgba(245, 158, 11, 0.1);
+  border-left: 4px solid #f59e0b;
+  padding: 12px 16px;
+  border-radius: 0 8px 8px 0;
+}
+.cover-disclaimer p {
+  font-size: 8.5pt;
+  color: #fde68a;
+  margin: 0;
+  line-height: 1.45;
+}
+.cover-footer {
+  border-top: 1px solid #334155;
+  padding-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 8pt;
+  color: #64748b;
+}
+
+/* Headings */
+h1 {
+  color: #0f172a;
+  font-size: 15pt;
+  font-weight: 800;
+  border-bottom: 2px solid #0284c7;
+  padding-bottom: 4px;
+  margin-top: 22px;
+  margin-bottom: 10px;
+  page-break-after: avoid;
+}
+h2 {
+  color: #0369a1;
+  font-size: 12pt;
+  font-weight: 700;
+  margin-top: 16px;
+  margin-bottom: 6px;
+  page-break-after: avoid;
+}
+h3 {
+  color: #334155;
+  font-size: 10pt;
+  font-weight: 700;
+  margin-top: 10px;
+  margin-bottom: 4px;
+  page-break-after: avoid;
+}
+
+p {
+  margin-bottom: 6px;
+  text-align: justify;
+}
+
+/* Tags / Badges */
+.tag {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 7pt;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.tag-impl { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+.tag-sim  { background: #e0f2fe; color: #0369a1; border: 1px solid #7dd3fc; }
+.tag-plan { background: #f3e8ff; color: #7e22ce; border: 1px solid #d8b4fe; }
+
+/* Callout Boxes */
+.callout {
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin: 10px 0;
+  font-size: 8.5pt;
+  page-break-inside: avoid;
+}
+.callout-amber {
+  background: #fffbeb;
+  border-left: 4px solid #f59e0b;
+  color: #92400e;
+}
+.callout-blue {
+  background: #f0f9ff;
+  border-left: 4px solid #0284c7;
+  color: #075985;
+}
+.callout-emerald {
+  background: #f0fdf4;
+  border-left: 4px solid #10b981;
+  color: #065f46;
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0;
+  font-size: 8pt;
+  page-break-inside: avoid;
+}
+th {
+  background: #0f172a;
+  color: #ffffff;
+  padding: 6px 8px;
+  font-weight: 700;
+  text-align: left;
+  border: 1px solid #1e293b;
+}
+td {
+  padding: 5px 8px;
+  border: 1px solid #cbd5e1;
+  vertical-align: top;
+}
+tr:nth-child(even) td {
+  background: #f8fafc;
+}
+
+/* Code & Pre */
+pre {
+  background: #090d16;
+  color: #38bdf8;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-family: "JetBrains Mono", Courier, monospace;
+  font-size: 7.5pt;
+  line-height: 1.35;
+  overflow-x: auto;
+  border: 1px solid #1e293b;
+  margin: 8px 0;
+  page-break-inside: avoid;
+}
+code {
+  font-family: "JetBrains Mono", Courier, monospace;
+  background: #f1f5f9;
+  color: #0f172a;
+  padding: 1px 3px;
+  border-radius: 3px;
+  font-size: 8pt;
+}
+
+.flow-box {
+  background: #f1f5f9;
+  border: 1px solid #94a3b8;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin: 8px 0;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 8pt;
+  line-height: 1.4;
+  color: #0f172a;
+  page-break-inside: avoid;
+}
+
+ul, ol {
+  margin-left: 18px;
+  margin-bottom: 6px;
+}
+li {
+  margin-bottom: 2px;
+}
+
+.page-break {
+  page-break-after: always;
+}
+</style>
+</head>
+<body>
+
+  <!-- SECTION 1: COVER PAGE -->
+  <div class="cover-page">
+    <div class="cover-top">
+      <div class="cover-badge">Smart India Hackathon 2026 &bull; Technical Specification</div>
+      <h1 class="cover-title">JEEVAN-AIR</h1>
+      <div class="cover-subtitle">Aerial Intelligence & Rescue &bull; Software Documentation</div>
+    </div>
+
+    <div class="cover-meta-grid">
+      <div class="cover-meta-item">
+        <span class="meta-label">Team</span>
+        <span class="meta-val cyan">TEAM ZYNTAX</span>
+      </div>
+      <div class="cover-meta-item">
+        <span class="meta-label">Problem Statement</span>
+        <span class="meta-val emerald">SIH26177</span>
+      </div>
+      <div class="cover-meta-item">
+        <span class="meta-label">Organization Sponsor</span>
+        <span class="meta-val amber">Qualcomm Inc</span>
+      </div>
+      <div class="cover-meta-item">
+        <span class="meta-label">Category & Theme</span>
+        <span class="meta-val">Hardware / Robotics and Drones</span>
+      </div>
+      <div class="cover-meta-item">
+        <span class="meta-label">Current Prototype Status</span>
+        <span class="meta-val cyan">Software / Web GCS Prototype (Active)</span>
+      </div>
+      <div class="cover-meta-item">
+        <span class="meta-label">Physical Hardware Status</span>
+        <span class="meta-val amber">Not Yet Built (Planned for Phase 4)</span>
+      </div>
+    </div>
+
+    <div class="cover-disclaimer">
+      <p><strong>IMPORTANT CURRENT STATUS DISCLOSURE:</strong> The physical drone hardware, flight controller, physical cameras, and live RF transceivers DO NOT exist yet. The current system is a fully functional Ground Control Station (GCS) web prototype running mathematically simulated telemetry and sensor streams. All features are rigorously classified as [IMPLEMENTED], [SIMULATED], or [PLANNED].</p>
+    </div>
+
+    <div class="cover-footer">
+      <span>Document Version: 1.0.0 (Phase 1–4 Software Architecture)</span>
+      <span>Date: September 2026 &bull; SIH 2026</span>
+    </div>
+  </div>
+
+  <!-- SECTION 2: PROJECT OVERVIEW -->
+  <h1>2. Project Overview</h1>
+  <p><strong>JEEVAN-AIR</strong> (<em>Aerial Intelligence & Rescue</em>) is an autonomous search-and-rescue (SAR) aerial decision-support system developed by <strong>Team ZYNTAX</strong> for the <strong>Smart India Hackathon 2026</strong> under Problem Statement <strong>SIH26177</strong> (sponsored by <strong>Qualcomm Inc</strong>).</p>
+  <p>During major disasters (flash floods, earthquakes, landslides, industrial fires), ground rescue teams face extreme hazards and severe information deprivation. First responders frequently enter disaster zones without knowing whether victims are trapped or dead, where active fire or chemical hazards exist, or if roads have collapsed. JEEVAN-AIR addresses this operational void through an intelligent, closed-loop decision pipeline:</p>
+  <div class="flow-box">
+    <strong>DETECT</strong> &longrightarrow; <strong>VERIFY</strong> &longrightarrow; <strong>ASSESS</strong> &longrightarrow; <strong>PRIORITIZE</strong> &longrightarrow; <strong>GUIDE</strong>
+  </div>
+  <p>The system moves beyond simple optical object detection by fusing multi-spectral optical and thermal signatures, scoring victim urgency on an explainable 0–100 scale, ranking survivors into an operational extraction queue, and generating hazard-free ground ingress corridors for first responders.</p>
+
+  <!-- SECTION 3: PROBLEM STATEMENT -->
+  <h1>3. Problem Statement</h1>
+  <p><strong>ID:</strong> SIH26177 &bull; <strong>Title:</strong> <em>A deployable AI-powered autonomous drone that aids search-and-rescue operations by detecting people and hazards, thereby improving responder safety and reducing victim discovery time.</em></p>
+  <p><strong>Core Operational Deficiencies Solved:</strong></p>
+  <ul>
+    <li><strong>Excessive Victim Discovery Latency:</strong> Manual foot searches in large disaster zones are perilous and slow.</li>
+    <li><strong>Optical False Positives:</strong> Inanimate debris, shadows, and blankets trigger false alarms, diverting critical ground resources.</li>
+    <li><strong>Lack of Urgency Prioritization:</strong> Commercial drones deliver unranked video streams, leaving commanders unable to triage which victims require immediate extraction.</li>
+    <li><strong>Danger to Ground Responders:</strong> Ground personnel lack visibility into secondary hazards (advancing fire, toxic plumes) between their staging area and victim coordinates.</li>
+  </ul>
+
+  <!-- SECTION 4: PROPOSED SOLUTION -->
+  <h1>4. Proposed Solution</h1>
+  <p>JEEVAN-AIR provides an integrated, deployable aerial command and decision-support architecture:</p>
+  <ul>
+    <li><span class="tag tag-impl">IMPLEMENTED</span> <strong>Rescue Intelligence Engine:</strong> Standalone algorithmic core (<a href="#"><code>src/services/rescueIntelligence.ts</code></a>) computing multi-factor risk, triage priority, and safe foot routes.</li>
+    <li><span class="tag tag-impl">IMPLEMENTED</span> <strong>Multi-Modal AI Pipeline Abstraction:</strong> Clean interfaces for YOLOv8 person detection, radiometric LWIR thermal analysis, and spatial IoU sensor fusion (<a href="#"><code>src/ai/</code></a>).</li>
+    <li><span class="tag tag-impl">IMPLEMENTED</span> <strong>Tactical Ground Control Station:</strong> 11 interactive command pages presenting real-time telemetry, GIS sector maps, alert feeds, and triage cards.</li>
+    <li><span class="tag tag-sim">SIMULATED</span> <strong>Simulation Data Adapter:</strong> Mathematical simulation of drone flight kinematics, lawn-mower route stepping, and sensor incident injections (<a href="#"><code>SimulationDataProvider.ts</code></a>).</li>
+    <li><span class="tag tag-plan">PLANNED</span> <strong>Hardware Datalink Integration:</strong> Future MAVLink 2.0 WebSocket client (<a href="#"><code>HardwareDataProvider.ts</code></a>) ready for physical drone connection with zero UI rewrite.</li>
+  </ul>
+
+  <!-- SECTION 5: CURRENT PROTOTYPE STATUS -->
+  <h1>5. Current Prototype Status</h1>
+  <div class="callout callout-amber">
+    <strong>Prototype Status Statement:</strong> The current JEEVAN-AIR deliverable is a comprehensive, production-quality <strong>software Ground Control Station and decision-support prototype</strong>. The physical UAV airframe, motors, flight controller, and physical cameras have <em>not yet been assembled</em>. All telemetry, GPS fixes, and camera streams are currently mathematically simulated.
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Subsystem</th>
+        <th>Engineering Status</th>
+        <th>Implementation Details</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Ground Control Station UI</strong></td>
+        <td><span class="tag tag-impl">IMPLEMENTED</span></td>
+        <td>11 operational pages in React 18, TypeScript 5.6, Tailwind CSS (Port 5180)</td>
+      </tr>
+      <tr>
+        <td><strong>Rescue Intelligence Engine</strong></td>
+        <td><span class="tag tag-impl">IMPLEMENTED</span></td>
+        <td>Risk scoring (0–100), Priority Queue (#1, #2), Safe Corridor (A*), 2nd-Look</td>
+      </tr>
+      <tr>
+        <td><strong>AI Sensor Fusion</strong></td>
+        <td><span class="tag tag-impl">IMPLEMENTED</span></td>
+        <td>Spatial IoU correlation (threshold &ge; 0.20), Bayesian confidence fusion</td>
+      </tr>
+      <tr>
+        <td><strong>Flight & Telemetry Simulation</strong></td>
+        <td><span class="tag tag-sim">SIMULATED</span></td>
+        <td>Kinematic lawn-mower stepping, battery discharge model, Chennai GPS grid</td>
+      </tr>
+      <tr>
+        <td><strong>Camera Video Feeds</strong></td>
+        <td><span class="tag tag-sim">SIMULATED</span></td>
+        <td>Canvas/SVG HUD overlays representing optical RGB, LWIR thermal, and AI overlay</td>
+      </tr>
+      <tr>
+        <td><strong>Physical UAV Hardware</strong></td>
+        <td><span class="tag tag-plan">PLANNED</span></td>
+        <td>Pixhawk 6C autopilot, u-blox M9N GNSS, NVIDIA Jetson Orin Nano, FLIR Boson</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- SECTION 6: OBJECTIVES -->
+  <h1>6. Objectives</h1>
+  <ol>
+    <li><strong>Minimize Victim Discovery Latency:</strong> Accelerate aerial sector scanning through automated computer vision.</li>
+    <li><strong>Maximize Ground Responder Safety:</strong> Dynamically synthesize ground ingress paths avoiding lethal hazard buffers.</li>
+    <li><strong>Eliminate False Positives:</strong> Verify optical candidate silhouettes against biometric core body heat (35.5&deg;C–38.2&deg;C).</li>
+    <li><strong>Deliver Explainable Decision Support:</strong> Provide transparent, human-readable rationale for every risk score.</li>
+    <li><strong>Maintain Zero-Rewrite Hardware Readiness:</strong> Ensure the software seamlessly transitions from simulation to physical drone operations via a single configuration toggle.</li>
+  </ol>
+
+  <!-- SECTION 7 & 8: REQUIREMENTS -->
+  <h1>7. Functional Requirements</h1>
+  <ul>
+    <li><strong>FR-1 (Telemetry Display):</strong> Display drone flight mode, battery, altitude, ground speed, heading, and GPS status at 1 Hz. <span class="tag tag-impl">IMPLEMENTED</span></li>
+    <li><strong>FR-2 (Survivor Triage):</strong> Score victims on a 0–100 risk scale and assign sequential priority ranks. <span class="tag tag-impl">IMPLEMENTED</span></li>
+    <li><strong>FR-3 (Second-Look Workflow):</strong> Allow operators to trigger automated re-examination of ambiguous targets. <span class="tag tag-impl">IMPLEMENTED</span></li>
+    <li><strong>FR-4 (Safe Route Synthesis):</strong> Calculate ground foot corridors bypassing sectors with active critical threats. <span class="tag tag-impl">IMPLEMENTED</span></li>
+    <li><strong>FR-5 (Dynamic Replanning):</strong> Automatically update primary mission objective upon discovering critical victims. <span class="tag tag-impl">IMPLEMENTED</span></li>
+    <li><strong>FR-6 (Simulation Fallback):</strong> Provide seamless fallback when AI models or physical sensors are unavailable. <span class="tag tag-impl">IMPLEMENTED</span></li>
+  </ul>
+
+  <h1>8. Non-Functional Requirements</h1>
+  <ul>
+    <li><strong>NFR-1 (Performance):</strong> Measured UI update latency &le; 50ms; measured AI pipeline latency tracked via <code>performance.now()</code>.</li>
+    <li><strong>NFR-2 (Type Safety):</strong> 100% strict TypeScript compilation with zero errors under <code>isolatedModules: true</code>.</li>
+    <li><strong>NFR-3 (Modularity):</strong> Complete decoupling between data adapters and presentation components via <code>IDataAdapter</code>.</li>
+    <li><strong>NFR-4 (Field Resilience):</strong> Zero external cloud runtime dependencies; capable of running on an isolated field laptop.</li>
+  </ul>
+
+  <!-- SECTION 9 & 10: ARCHITECTURES -->
+  <div class="page-break"></div>
+  <h1>9. Current Software Architecture</h1>
+  <p>The current software prototype implements a decoupled, event-driven Clean Architecture:</p>
+  <div class="flow-box">
+    <strong>CURRENT SOFTWARE FLOW:</strong><br>
+    SimulationDataProvider &longrightarrow; IDataAdapter Interface &longrightarrow; Common Data Models &longrightarrow; Rescue Intelligence &longrightarrow; MissionContext &longrightarrow; GCS Dashboard
+  </div>
+  <p>The dashboard never interacts with data generation logic directly. It subscribes to the <code>IDataAdapter</code> contract, ensuring that switching to physical hardware requires zero UI code modifications.</p>
+
+  <h1>10. System Architecture</h1>
+  <p>Comparison between current prototype architecture and future physical drone architecture:</p>
+  
+  <table>
+    <thead>
+      <tr>
+        <th>Layer</th>
+        <th>Current Software Prototype</th>
+        <th>Future Physical Drone Deployment</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Sensing & Flight</strong></td>
+        <td><span class="tag tag-sim">SIMULATED</span> Mathematical lawn-mower route stepping in <code>SimulationDataProvider.ts</code></td>
+        <td><span class="tag tag-plan">PLANNED</span> Physical UAV + Pixhawk 6C + Sony IMX477 Optical + FLIR Boson+ 320 LWIR</td>
+      </tr>
+      <tr>
+        <td><strong>Edge Computing</strong></td>
+        <td><span class="tag tag-sim">SIMULATED</span> Host browser execution</td>
+        <td><span class="tag tag-plan">PLANNED</span> NVIDIA Jetson Orin Nano 8GB running TensorRT YOLOv8</td>
+      </tr>
+      <tr>
+        <td><strong>Datalink Bridge</strong></td>
+        <td><span class="tag tag-impl">IMPLEMENTED</span> In-memory event bus (TypeScript Set&lt;()=&gt;void&gt;)</td>
+        <td><span class="tag tag-plan">PLANNED</span> JeevanAir Edge Bridge (Python/FastAPI WebSocket + 2.4GHz RF)</td>
+      </tr>
+      <tr>
+        <td><strong>Adapter Ingest</strong></td>
+        <td><span class="tag tag-impl">IMPLEMENTED</span> <code>SimulationDataProvider.ts</code></td>
+        <td><span class="tag tag-plan">PLANNED</span> <code>HardwareDataProvider.ts</code> (WebSocket client)</td>
+      </tr>
+      <tr>
+        <td><strong>Intelligence Core</strong></td>
+        <td><span class="tag tag-impl">IMPLEMENTED</span> <code>rescueIntelligence.ts</code> (Risk, Priority, Safe Route)</td>
+        <td><span class="tag tag-impl">IMPLEMENTED</span> Identical code reused without alteration</td>
+      </tr>
+      <tr>
+        <td><strong>Command Center</strong></td>
+        <td><span class="tag tag-impl">IMPLEMENTED</span> React 18 GCS Dashboard (11 Tactical Pages)</td>
+        <td><span class="tag tag-impl">IMPLEMENTED</span> Identical UI reused without alteration</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- SECTION 11: DATA FLOW -->
+  <h1>11. Data Flow</h1>
+  <div class="flow-box">
+    <strong>MULTI-MODAL DECISION DATA FLOW:</strong><br>
+    Optical RGB Frame + Thermal LWIR Frame &longrightarrow; YOLOv8 Detection + Radiometric Analysis<br>
+    &longrightarrow; MultiModalFusionEngine (Spatial IoU Correlation &ge; 0.20)<br>
+    &longrightarrow; FusedAIDetection (Confidence, Biometric Heat Verification)<br>
+    &longrightarrow; assessSurvivorRisk() [5-Factor Multi-Factor Score 0–100]<br>
+    &longrightarrow; prioritizeSurvivors() [Sequential Urgency Ranking #1, #2...]<br>
+    &longrightarrow; calculateSafeRoute() [A* Ground Hazard-Bypass Corridor]<br>
+    &longrightarrow; MissionContext State Update &longrightarrow; Reactive UI Re-render
+  </div>
+
+  <!-- SECTION 12: SOFTWARE MODULES -->
+  <h1>12. Software Modules</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Directory / File</th>
+        <th>Layer</th>
+        <th>Primary Role</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>src/types/common.ts</code></td>
+        <td>Domain</td>
+        <td>Canonical data models (Telemetry, Survivor, Hazard, Alert, Route)</td>
+        <td><span class="tag tag-impl">IMPLEMENTED</span></td>
+      </tr>
+      <tr>
+        <td><code>src/adapters/IDataAdapter.ts</code></td>
+        <td>Adapter</td>
+        <td>Abstract interface contract for all telemetry providers</td>
+        <td><span class="tag tag-impl">IMPLEMENTED</span></td>
+      </tr>
+      <tr>
+        <td><code>src/adapters/SimulationDataProvider.ts</code></td>
+        <td>Adapter</td>
+        <td>Simulated flight kinematics, lawn-mower route, incident generator</td>
+        <td><span class="tag tag-sim">SIMULATED</span></td>
+      </tr>
+      <tr>
+        <td><code>src/adapters/HardwareDataProvider.ts</code></td>
+        <td>Adapter</td>
+        <td>Future WebSocket MAVLink client stub</td>
+        <td><span class="tag tag-plan">PLANNED</span></td>
+      </tr>
+      <tr>
+        <td><code>src/adapters/providerFactory.ts</code></td>
+        <td>Adapter</td>
+        <td>Factory reading <code>SIMULATION_MODE</code> for single-switch selection</td>
+        <td><span class="tag tag-impl">IMPLEMENTED</span></td>
+      </tr>
+      <tr>
+        <td><code>src/services/rescueIntelligence.ts</code></td>
+        <td>Intelligence</td>
+        <td>Risk scoring, priority sorting, A* safe routing, second-look resolution</td>
+        <td><span class="tag tag-impl">IMPLEMENTED</span></td>
+      </tr>
+      <tr>
+        <td><code>src/ai/AIPipelineService.ts</code></td>
+        <td>AI / Vision</td>
+        <td>Multi-modal pipeline orchestrator and benchmark tracking</td>
+        <td><span class="tag tag-impl">IMPLEMENTED</span></td>
+      </tr>
+      <tr>
+        <td><code>src/ai/MultiModalFusionEngine.ts</code></td>
+        <td>AI / Vision</td>
+        <td>Spatial IoU correlation and Bayesian confidence booster</td>
+        <td><span class="tag tag-impl">IMPLEMENTED</span></td>
+      </tr>
+      <tr>
+        <td><code>src/hardware/config.ts</code></td>
+        <td>Hardware Prep</td>
+        <td><code>SIMULATION_MODE</code> toggle and 18-item readiness checklist</td>
+        <td><span class="tag tag-impl">IMPLEMENTED</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- SECTION 13 TO 20: RESCUE INTELLIGENCE -->
+  <div class="page-break"></div>
+  <h1>13. Survivor Detection</h1>
+  <p><span class="tag tag-impl">IMPLEMENTED</span> <strong>Abstraction</strong> &bull; <span class="tag tag-sim">SIMULATED</span> <strong>Frames</strong></p>
+  <p>Combines optical silhouette detection with radiometric LWIR thermal verification:</p>
+  <ul>
+    <li><strong>Optical Detection (<code>YoloVisionProvider.ts</code>):</strong> Detects human silhouettes, outputting bounding box coordinates $(x, y, w, h)$ and confidence.</li>
+    <li><strong>Thermal Verification (<code>ThermalProcessingProvider.ts</code>):</strong> Evaluates radiometric heat matrix to confirm human core temperatures ($35.5^\circ\text{C}\text{–}38.2^\circ\text{C}$).</li>
+    <li><strong>IoU Sensor Fusion (<code>MultiModalFusionEngine.ts</code>):</strong> Correlates optical and thermal detections spatially with an IoU threshold of $0.20$. Boosts confidence on dual confirmation, discounts confidence on optical-only detections.</li>
+  </ul>
+
+  <h1>14. Hazard Detection</h1>
+  <p><span class="tag tag-impl">IMPLEMENTED</span> <strong>Interface</strong> &bull; <span class="tag tag-sim">SIMULATED</span> <strong>Incidents</strong></p>
+  <p>Tracks 8 operational disaster hazard categories via <code>HazardDetectionProvider.ts</code>:</p>
+  <ul>
+    <li><strong>Fire:</strong> Thermal combustion detection ($T > 60^\circ\text{C}$), affected radius $50\text{m}$.</li>
+    <li><strong>Flood / Flooded Area:</strong> Specular reflectance and water boundary edge indices.</li>
+    <li><strong>Smoke:</strong> Atmospheric contrast degradation and aerosol dispersion.</li>
+    <li><strong>Debris & Damaged Structure:</strong> Surface texture roughness and geometric collapse profiles.</li>
+    <li><strong>Chemical Hazard:</strong> Plume dispersion tracking and thermal vapor contrast.</li>
+  </ul>
+
+  <h1>15. Rescue Intelligence Core</h1>
+  <p><span class="tag tag-impl">IMPLEMENTED</span> <strong>Standalone Module (<code>src/services/rescueIntelligence.ts</code>)</strong></p>
+  <p>Transforms raw sensing data into actionable field directives. Implements pure functional logic independent of UI frameworks, validated by 24 automated unit tests.</p>
+
+  <h1>16. Risk Assessment</h1>
+  <p><span class="tag tag-impl">IMPLEMENTED</span> <strong>Scoring Algorithm</strong></p>
+  <p>Computes an explainable risk score ($0\text{–}100$) across five weighted factors:</p>
+  <table>
+    <thead>
+      <tr>
+        <th>Evaluation Factor</th>
+        <th>Weight</th>
+        <th>Scoring Rules</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Movement Status</strong></td>
+        <td>0–30 pts</td>
+        <td><code>NO_MOVEMENT</code> / <code>STATIC</code>: +28 | <code>UNKNOWN</code>: +15 | <code>MOVEMENT_DETECTED</code>: +10</td>
+      </tr>
+      <tr>
+        <td><strong>Estimated Condition</strong></td>
+        <td>0–25 pts</td>
+        <td><code>CRITICAL</code>: +25 | <code>UNCERTAIN</code>: +18 | <code>POSSIBLE</code>: +14 | <code>STABLE</code>: +8</td>
+      </tr>
+      <tr>
+        <td><strong>Thermal Confirmation</strong></td>
+        <td>0–15 pts</td>
+        <td>Confirmed biometric heat ($35.5^\circ\text{C}\text{–}38.2^\circ\text{C}$): +15 | Unconfirmed: +5</td>
+      </tr>
+      <tr>
+        <td><strong>Hazard Proximity</strong></td>
+        <td>0–20 pts</td>
+        <td>Within buffer of Critical hazard: +20 | High hazard: +15 | Distance &lt; 50m: +10</td>
+      </tr>
+      <tr>
+        <td><strong>Terrain Accessibility</strong></td>
+        <td>0–10 pts</td>
+        <td>Flooded / impassable terrain: +10 | Debris obstruction: +5 | Clear: +2</td>
+      </tr>
+    </tbody>
+  </table>
+  <p><strong>Severity Mapping:</strong> CRITICAL (&ge; 75), HIGH (50–74), MEDIUM (25–49), LOW (0–24).</p>
+
+  <h1>17. Rescue Prioritization</h1>
+  <p><span class="tag tag-impl">IMPLEMENTED</span> <strong>Priority Queue</strong></p>
+  <p>Sorts survivors into an actionable queue:</p>
+  <ol>
+    <li>Filters out rejected false positives.</li>
+    <li>Sorts primarily by descending <code>riskScore</code>.</li>
+    <li>Resolves ties via sensor <code>confidence</code>.</li>
+    <li>Assigns ordinal ranks (<code>Priority #1</code>, <code>Priority #2</code>...) rendered on dashboard badges.</li>
+  </ol>
+
+  <h1>18. Second-Look Verification</h1>
+  <p><span class="tag tag-impl">IMPLEMENTED</span> <strong>Verification Workflow</strong></p>
+  <p>Ambiguous detections (low confidence, optical-only) are placed in <code>POSSIBLE</code> status. Clicking <code>REQUEST SECOND LOOK</code> transitions the target to <code>UNDER_REVIEW</code> and simulates multi-spectral re-examination: confirming genuine survivors to <code>VERIFIED</code> (confidence elevated &ge; 88%) or rejecting false-positive debris to <code>REJECTED</code>.</p>
+
+  <h1>19. Safe-Access Guidance</h1>
+  <p><span class="tag tag-impl">IMPLEMENTED</span> <strong>A* Ingress Pathfinding</strong></p>
+  <div class="callout callout-emerald">
+    <strong>Fundamental Distinction:</strong> Drone Flight Route &ne; Ground Responder Route. The drone flies straight over rivers and fires, but ground rescue teams require safe paths on foot.
+  </div>
+  <p>The pathfinding engine evaluates a 3&times;3 sector graph, marks sectors with active critical hazards as impassable obstacles, and computes the shortest hazard-free corridor from base (A1) to the victim, including walking travel time at $1.1\text{ m/s}$.</p>
+
+  <h1>20. Mission Replanning</h1>
+  <p><span class="tag tag-impl">IMPLEMENTED</span> <strong>Dynamic Objective Engine</strong></p>
+  <p>Automatically retargets the drone from broad sweep mode to localized target monitoring upon discovering critical victims or emerging fires, updating the mission banner and timeline.</p>
+
+  <!-- SECTION 21 TO 27: SYSTEM INFRASTRUCTURE -->
+  <div class="page-break"></div>
+  <h1>21. Dashboard Architecture</h1>
+  <p><span class="tag tag-impl">IMPLEMENTED</span> <strong>11 Operational Pages</strong></p>
+  <p>Dashboard (command center), Mission Control (flight buttons & injections), Live Search (multi-spectral viewport), Detections (ledger), Hazards (threat tracker), Search Map (GIS grid), Alerts (notification center), Mission History (logs), System Status (health gauges), System Architecture (diagrams), and HW Integration (readiness checklist).</p>
+
+  <h1>22. Simulation Architecture</h1>
+  <p><span class="tag tag-sim">SIMULATED</span> <strong>Kinematic Simulation Engine</strong></p>
+  <p>Generates realistic drone position along a 10-waypoint lawn-mower route across sectors A1–C3, decrements battery from 98%, models 3D GPS lock at 13.0827&deg;N, 80.2707&deg;E, and provides scenario injection controls.</p>
+
+  <h1>23. AI Architecture</h1>
+  <p><span class="tag tag-impl">IMPLEMENTED</span> <strong>Measured Performance Pipeline</strong></p>
+  <p>Measures actual execution latency via <code>performance.now()</code>. Features simulation fallback mode badged in UI when models are offline. Zero fabricated benchmark numbers.</p>
+
+  <h1>24. Connectivity</h1>
+  <p><span class="tag tag-sim">SIMULATED</span> <strong>Current State</strong> &bull; <span class="tag tag-plan">PLANNED</span> <strong>Hardware Bridge</strong></p>
+  <p>Current prototype models three communication states: <code>SIMULATED — CONNECTED</code>, <code>DEGRADED</code>, and <code>DISCONNECTED</code>. Future architecture specifies 2.4GHz RF MAVLink telemetry and 4G/LTE failover.</p>
+
+  <h1>25. Security</h1>
+  <p><span class="tag tag-plan">PLANNED</span> <strong>Deployment Architecture</strong></p>
+  <p>MAVLink 2.0 packet signing via SHA-256 HMAC tokens, role-based access control (Commander vs. Responder), hardware geofencing with automated RTL fail-safe, and isolated local RF/Wi-Fi mesh operation.</p>
+
+  <h1>26. Error Handling</h1>
+  <p><span class="tag tag-impl">IMPLEMENTED</span> <strong>Fault-Tolerant Defenses</strong></p>
+  <p>Hardware provider returns safe fallback telemetry when disconnected; A* pathfinder returns <code>BLOCKED</code> with advisories rather than crashing when access is cut off; AI pipeline falls back gracefully to synthetic generation on model failure.</p>
+
+  <h1>27. Testing & Verification</h1>
+  <p><span class="tag tag-impl">IMPLEMENTED</span> <strong>85 Automated Assertions (100% Pass Rate)</strong></p>
+  <ul>
+    <li><strong>Phase 2 Intelligence Suite (<code>rescueIntelligence.test.ts</code>):</strong> 24 / 24 PASSED (Risk scoring, priority sorting, A* routing, second-look resolution, timeline events).</li>
+    <li><strong>Phase 3 AI Pipeline Suite (<code>aiPipeline.test.ts</code>):</strong> 61 / 61 PASSED (YOLO optical, thermal radiometric, hazard detection, IoU fusion, fallback mode, performance measurement).</li>
+    <li><strong>Build Verification:</strong> <code>npm run build</code> passes cleanly in 1.4s with zero TypeScript warnings.</li>
+  </ul>
+
+  <!-- SECTION 28 TO 35: COMPARISON & ROADMAP -->
+  <div class="page-break"></div>
+  <h1>28. Current Limitations</h1>
+  <ol>
+    <li><strong>Physical Drone Absent:</strong> Airframe, motors, ESCs, and battery pack are not physically constructed.</li>
+    <li><strong>Hardware Sensors Absent:</strong> Optical and thermal cameras are simulated; no physical video feeds.</li>
+    <li><strong>No Live MAVLink Datalink:</strong> Telemetry is generated via mathematical formulas in software.</li>
+    <li><strong>Coarse 3&times;3 Grid:</strong> Ground routing operates across 9 discrete sectors rather than continuous DEM terrain maps.</li>
+    <li><strong>Client-Side Execution:</strong> AI inference runs on the browser CPU rather than an onboard NVIDIA Jetson.</li>
+  </ol>
+
+  <h1>29. Future Hardware Integration</h1>
+  <p><span class="tag tag-plan">PLANNED</span> <strong>Zero-Rewrite Hot-Swap Architecture</strong></p>
+  <p>The system is pre-engineered for physical hardware. When the physical drone is constructed:</p>
+  <ol>
+    <li>Deploy JeevanAir Edge Bridge (Python/FastAPI) on NVIDIA Jetson Orin Nano connected to Pixhawk via UART.</li>
+    <li>In <a href="#"><code>src/hardware/config.ts</code></a>, set <code>SIMULATION_MODE = false</code> and configure WebSocket URL.</li>
+    <li><code>providerFactory.ts</code> automatically switches to <code>HardwareDataProvider</code>. <strong>Zero UI code modified.</strong></li>
+  </ol>
+
+  <h1>30. Future Scope</h1>
+  <ul>
+    <li><strong>Continuous 3D Topographical Routing:</strong> High-resolution LiDAR Digital Elevation Models (DEM) with slope hazard modeling.</li>
+    <li><strong>Multi-UAV Swarm Mesh:</strong> Decentralized autonomous coordination across multiple search drones.</li>
+    <li><strong>Emergency Payload Drop:</strong> Actuated servo release for medical kits, water purification, and emergency radios.</li>
+  </ul>
+
+  <h1>31. Technology Stack</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Layer</th>
+        <th>Technology</th>
+        <th>Version</th>
+        <th>Role</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Language</td>
+        <td>TypeScript</td>
+        <td>5.6.3</td>
+        <td>Strictly typed domain models, interfaces, and algorithms</td>
+      </tr>
+      <tr>
+        <td>UI Framework</td>
+        <td>React</td>
+        <td>18.3.1</td>
+        <td>Component tree, reactive context state, tactical layout</td>
+      </tr>
+      <tr>
+        <td>Styling</td>
+        <td>Tailwind CSS</td>
+        <td>3.4.14</td>
+        <td>Tactical dark-theme utility styling and responsive grid</td>
+      </tr>
+      <tr>
+        <td>Build & Dev</td>
+        <td>Vite</td>
+        <td>5.4.8</td>
+        <td>Fast HMR dev server (Port 5180) and Rollup production bundler</td>
+      </tr>
+      <tr>
+        <td>Icons</td>
+        <td>Lucide React</td>
+        <td>1.16.0</td>
+        <td>Tactical radar, drone, alert, hazard iconography</td>
+      </tr>
+      <tr>
+        <td>Testing</td>
+        <td>tsx</td>
+        <td>Native</td>
+        <td>TypeScript test runner executing 85 automated assertions</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h1>32. Project Structure</h1>
+  <pre>
+jeevan-air/
+├── docs/                                  # Technical specifications & documentation
+│   ├── JEEVAN-AIR-Software-Documentation.md
+│   ├── JEEVAN-AIR-Prototype.md
+│   └── ER-Diagram.md
+├── src/
+│   ├── adapters/                          # Data Provider Layer
+│   │   ├── IDataAdapter.ts                # Abstract provider contract
+│   │   ├── SimulationDataProvider.ts      # [SIMULATED] Concrete flight & sensor simulation
+│   │   ├── HardwareDataProvider.ts        # [PLANNED] Future MAVLink WebSocket client
+│   │   └── providerFactory.ts             # Hot-swap provider factory selector
+│   ├── ai/                                # Multi-Modal AI & Vision Module
+│   │   ├── AIPipelineService.ts           # Central orchestrator with performance.now()
+│   │   ├── YoloVisionProvider.ts          # Optical YOLOv8 person detection abstraction
+│   │   ├── ThermalProcessingProvider.ts   # Radiometric LWIR thermal analyzer
+│   │   ├── HazardDetectionProvider.ts     # Extensible hazard classifier interface
+│   │   └── MultiModalFusionEngine.ts      # Spatial IoU sensor fusion engine
+│   ├── components/                        # Reusable Tactical UI Components
+│   │   ├── ai/AIInferencePanel.tsx        # Live inference diagnostics panel
+│   │   ├── intelligence/                  # Rescue Intelligence components
+│   │   │   ├── DecisionTimeline.tsx       # Chronological audit log
+│   │   │   ├── MissionObjectiveBanner.tsx # Dynamic replanning banner
+│   │   │   └── RescuePriorityPanel.tsx    # Priority queue, explainable cards, routes
+│   │   ├── map/SearchMap.tsx              # Tactical 3x3 sector GIS map
+│   │   └── camera/CameraFeed.tsx          # Multi-spectral camera viewport
+│   ├── hardware/                          # Phase 4 Hardware Integration Layer
+│   │   ├── config.ts                      # SIMULATION_MODE toggle & readiness checklist
+│   │   └── types.ts                       # Complete 12-schema MAVLink telemetry types
+│   ├── services/
+│   │   └── rescueIntelligence.ts          # Pure algorithms: Risk, Priority, A* Route
+│   ├── tests/
+│   │   ├── rescueIntelligence.test.ts     # 24 Phase 2 intelligence assertions
+│   │   └── aiPipeline.test.ts             # 61 Phase 3 AI pipeline assertions
+│   └── types/common.ts                    # Canonical Common Data Model interfaces
+└── package.json                           # Scripts & dependencies
+  </pre>
+
+  <h1>33. Installation</h1>
+  <pre>
+# 1. Clone repository
+git clone https://github.com/Srisharadhakrishnan/SIH26177.git
+cd SIH26177
+
+# 2. Install dependencies
+npm install
+
+# 3. Verify TypeScript and production build
+npm run build
+  </pre>
+
+  <h1>34. Running the Project</h1>
+  <pre>
+# Start local dev server (configured on port 5180 to avoid collisions)
+npm run dev
+# Open browser at: http://localhost:5180/
+
+# Run complete test suite (85 assertions)
+npm run test:all
+  </pre>
+
+  <h1>35. Conclusion</h1>
+  <p>The <strong>JEEVAN-AIR</strong> software prototype delivers a verified, highly capable Ground Control Station and aerial decision-support system. By solving the critical gap between raw aerial vision and ground responder action, the system demonstrates how AI-powered drones can drastically reduce victim discovery time and protect responder lives during disasters. Engineered with clean separation of concerns and single-switch hardware readiness, JEEVAN-AIR is ready for SIH evaluation, technical review, and physical hardware deployment.</p>
+
+  <!-- APPENDIX TABLE: IMPLEMENTED VS SIMULATED VS PLANNED -->
+  <div class="page-break"></div>
+  <h1>Appendix: Comprehensive Feature Classification Matrix</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Subsystem / Feature</th>
+        <th>Category</th>
+        <th>Classification</th>
+        <th>Technical Scope & Implementation</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Common Data Model</td>
+        <td>Architecture</td>
+        <td><span class="tag tag-impl">IMPLEMENTED</span></td>
+        <td>Strongly typed domain models in <code>src/types/common.ts</code></td>
+      </tr>
+      <tr>
+        <td>Data Adapter Contract</td>
+        <td>Architecture</td>
+        <td><span class="tag tag-impl">IMPLEMENTED</span></td>
+        <td><code>IDataAdapter</code> abstract interface decoupling simulation from UI</td>
+      </tr>
+      <tr>
+        <td>Provider Factory</td>
+        <td>Architecture</td>
+        <td><span class="tag tag-impl">IMPLEMENTED</span></td>
+        <td>Single-switch hot-swap factory reading <code>SIMULATION_MODE</code></td>
+      </tr>
+      <tr>
+        <td>Explainable Risk Scoring</td>
+        <td>Intelligence</td>
+        <td><span class="tag tag-impl">IMPLEMENTED</span></td>
+        <td>5-factor scoring (0–100) with explainable rationale strings</td>
+      </tr>
+      <tr>
+        <td>Rescue Priority Queue</td>
+        <td>Intelligence</td>
+        <td><span class="tag tag-impl">IMPLEMENTED</span></td>
+        <td>Active triage sorting (#1, #2...) with tie-breakers</td>
+      </tr>
+      <tr>
+        <td>Safe-Access Ground Routing</td>
+        <td>Intelligence</td>
+        <td><span class="tag tag-impl">IMPLEMENTED</span></td>
+        <td>A* pathfinding on 3&times;3 sector grid avoiding active hazard zones</td>
+      </tr>
+      <tr>
+        <td>Second-Look Verification</td>
+        <td>Intelligence</td>
+        <td><span class="tag tag-impl">IMPLEMENTED</span></td>
+        <td>Ambiguity resolution workflow eliminating false-positive debris</td>
+      </tr>
+      <tr>
+        <td>Spatial IoU Sensor Fusion</td>
+        <td>AI / Vision</td>
+        <td><span class="tag tag-impl">IMPLEMENTED</span></td>
+        <td>Multi-modal bounding box correlation and confidence boost</td>
+      </tr>
+      <tr>
+        <td>Measured Latency Tracking</td>
+        <td>AI / Vision</td>
+        <td><span class="tag tag-impl">IMPLEMENTED</span></td>
+        <td>Actual execution benchmarking via <code>performance.now()</code></td>
+      </tr>
+      <tr>
+        <td>AI Simulation Fallback</td>
+        <td>AI / Vision</td>
+        <td><span class="tag tag-impl">IMPLEMENTED</span></td>
+        <td>Seamless fallback mode badged in UI when models are offline</td>
+      </tr>
+      <tr>
+        <td>Tactical GCS Dashboard</td>
+        <td>User Interface</td>
+        <td><span class="tag tag-impl">IMPLEMENTED</span></td>
+        <td>11 operational pages in dark tactical theme on Port 5180</td>
+      </tr>
+      <tr>
+        <td>Drone Flight Kinematics</td>
+        <td>Simulation</td>
+        <td><span class="tag tag-sim">SIMULATED</span></td>
+        <td>Stepped lawn-mower route across sectors A1–C3 at 3.5 m/s</td>
+      </tr>
+      <tr>
+        <td>Drone Telemetry Gauges</td>
+        <td>Simulation</td>
+        <td><span class="tag tag-sim">SIMULATED</span></td>
+        <td>Altitude (32m AGL), speed, heading, and battery discharge curve</td>
+      </tr>
+      <tr>
+        <td>GPS Satellite Positioning</td>
+        <td>Simulation</td>
+        <td><span class="tag tag-sim">SIMULATED</span></td>
+        <td>Mathematical 3D fix centered on Chennai disaster coordinates</td>
+      </tr>
+      <tr>
+        <td>Camera Video Streams</td>
+        <td>Simulation</td>
+        <td><span class="tag tag-sim">SIMULATED</span></td>
+        <td>Canvas/SVG HUD overlays simulating optical, thermal, and AI overlay</td>
+      </tr>
+      <tr>
+        <td>Physical UAV Airframe</td>
+        <td>Hardware</td>
+        <td><span class="tag tag-plan">PLANNED</span></td>
+        <td>Quadcopter frame, brushless motors, ESCs, and LiPo power system</td>
+      </tr>
+      <tr>
+        <td>Physical Autopilot</td>
+        <td>Hardware</td>
+        <td><span class="tag tag-plan">PLANNED</span></td>
+        <td>Pixhawk 6C running ArduCopter / PX4 with MAVLink 2.0</td>
+      </tr>
+      <tr>
+        <td>Physical Cameras</td>
+        <td>Hardware</td>
+        <td><span class="tag tag-plan">PLANNED</span></td>
+        <td>Sony IMX477 optical camera and FLIR Boson+ 320 LWIR thermal camera</td>
+      </tr>
+      <tr>
+        <td>Onboard Edge Computer</td>
+        <td>Hardware</td>
+        <td><span class="tag tag-plan">PLANNED</span></td>
+        <td>NVIDIA Jetson Orin Nano running TensorRT YOLOv8</td>
+      </tr>
+      <tr>
+        <td>Edge WebSocket Bridge</td>
+        <td>Hardware</td>
+        <td><span class="tag tag-plan">PLANNED</span></td>
+        <td>Python/FastAPI service broadcasting <code>HardwareTelemetryPacket</code> at 10 Hz</td>
+      </tr>
+    </tbody>
+  </table>
+
+</body>
+</html>
+"""
+
+with open(html_path, "w") as f:
+    f.write(content)
+
+print(f"Written {len(content)} bytes to {html_path}")

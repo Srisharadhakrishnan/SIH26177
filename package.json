@@ -1,12 +1,15 @@
 {
-  "name": "resq-drone-sih26177",
+  "name": "jeevan-air-sih26177",
   "private": true,
   "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "npx tsx src/tests/rescueIntelligence.test.ts",
+    "test:ai": "npx tsx src/tests/aiPipeline.test.ts",
+    "test:all": "npx tsx src/tests/rescueIntelligence.test.ts && npx tsx src/tests/aiPipeline.test.ts"
   },
   "dependencies": {
     "clsx": "^2.1.1",

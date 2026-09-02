@@ -35,15 +35,15 @@ export const Header: React.FC = () => {
           <div>
             <div className="flex items-center space-x-2">
               <h1 className="text-xl font-extrabold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-300">
-                RESQ DRONE
+                JEEVAN-AIR
               </h1>
               <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                SIMULATION MODE
+                SOFTWARE PROTOTYPE
               </span>
             </div>
             <p className="text-xs text-slate-400 font-medium tracking-tight">
-              AI-Powered Autonomous Search & Rescue System <span className="text-slate-600 font-normal">| SIH26177</span>
+              Aerial Intelligence & Rescue <span className="text-slate-600 font-normal">| TEAM ZYNTAX · SIH26177 · Qualcomm Inc</span>
             </p>
           </div>
         </div>
@@ -53,7 +53,7 @@ export const Header: React.FC = () => {
           {/* Current Mission */}
           <div className="bg-slate-900/90 border border-slate-800 px-3 py-1.5 rounded-md flex items-center space-x-2">
             <span className="text-slate-400 font-medium">Mission:</span>
-            <span className="text-cyan-300 font-semibold">Flood Rescue Simulation</span>
+            <span className="text-cyan-300 font-semibold">{droneStatus.mission}</span>
           </div>
 
           {/* Clock */}

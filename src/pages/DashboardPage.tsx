@@ -7,29 +7,36 @@ import { SearchMap } from '../components/map/SearchMap';
 import { AlertPanel } from '../components/alerts/AlertPanel';
 import { MissionControls } from '../components/controls/MissionControls';
 import {
+  MissionObjectiveBanner,
+  RescuePriorityPanel,
+  DecisionTimeline,
+} from '../components/intelligence';
+import { AIInferencePanel } from '../components/ai';
+import {
   Activity,
   User,
   Flame,
   Grid,
   Clock,
-  Compass,
+  AlertTriangle,
 } from 'lucide-react';
 
 export const DashboardPage: React.FC = () => {
   const {
     droneStatus,
     zones,
-    detections,
+    survivors,
     hazards,
     formattedMissionTime,
   } = useMission();
 
-  const victimsCount = detections.filter(d => d.type === 'Victim' && d.status !== 'DISMISSED').length;
+  const survivorsCount = survivors.filter(s => s.verificationStatus !== 'REJECTED').length;
+  const criticalCount = survivors.filter(s => (s.riskLevel === 'CRITICAL' || s.riskLevel === 'HIGH') && s.verificationStatus !== 'REJECTED').length;
   const hazardsCount = hazards.filter(h => h.status !== 'DISMISSED').length;
   const searchedZonesCount = zones.filter(z => z.status === 'searched').length;
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6 animate-fade-in pb-8">
       {/* Top 6 KPI Stat Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
         <StatCard
@@ -37,54 +44,57 @@ export const DashboardPage: React.FC = () => {
           value={`${droneStatus.progressPercent}%`}
           icon={Activity}
           accentColor="cyan"
-          trend="Grid Coverage"
+          trend="Autonomous Grid"
         />
 
         <StatCard
-          label="Victims Detected"
-          value={victimsCount}
+          label="Survivors Identified"
+          value={survivorsCount}
           icon={User}
           accentColor="red"
-          trend={victimsCount > 0 ? "Priority Extraction" : "Monitoring Area"}
+          trend={survivorsCount > 0 ? "Prioritization Active" : "Scanning Sectors"}
         />
 
         <StatCard
-          label="Hazards Detected"
+          label="High/Critical Risk"
+          value={criticalCount}
+          icon={AlertTriangle}
+          accentColor="red"
+          trend={criticalCount > 0 ? "Urgent Action Required" : "Airspace Monitored"}
+        />
+
+        <StatCard
+          label="Hazards Mapped"
           value={hazardsCount}
           icon={Flame}
           accentColor="amber"
-          trend={hazardsCount > 0 ? "Avoidance Active" : "Clear Airspace"}
+          trend={hazardsCount > 0 ? "Safe Corridors Active" : "No Critical Hazard"}
         />
 
         <StatCard
-          label="Zones Searched"
+          label="Zones Surveyed"
           value={`${searchedZonesCount} / 9`}
           icon={Grid}
           accentColor="emerald"
-          trend="3x3 Tactical Grid"
+          trend="3×3 Sector Grid"
         />
 
         <StatCard
-          label="Mission Time"
+          label="Mission Duration"
           value={formattedMissionTime}
           icon={Clock}
           accentColor="purple"
-          trend="Sim Elapsed"
-        />
-
-        <StatCard
-          label="Current Zone"
-          value={droneStatus.currentZone}
-          icon={Compass}
-          accentColor="blue"
-          trend="Waypoint Lock"
+          trend="Elapsed Simulation"
         />
       </div>
 
-      {/* Mission Controls Bar */}
+      {/* FEATURE 7: Dynamic Mission Replanning Objective Strip */}
+      <MissionObjectiveBanner />
+
+      {/* Mission Controls Bar with Trigger Injections */}
       <MissionControls />
 
-      {/* Main Command Center Grid: Left Live Feed & Map, Right Telemetry & Alerts */}
+      {/* Tactical Center Grid: Camera Feed, Map, Drone Status, Alerts */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
         {/* Left Column (7 cols): Camera Feed & Live Sector Map */}
         <div className="xl:col-span-7 space-y-6">
@@ -104,6 +114,15 @@ export const DashboardPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* PHASE 3: AI Inference & Multi-Modal Fusion Engine Diagnostics */}
+      <AIInferencePanel />
+
+      {/* FEATURE 4, 6 & 10: Rescue Intelligence Panel (Priorities + Explainable Decision + Safe Route) */}
+      <RescuePriorityPanel />
+
+      {/* FEATURE 9: Decision & Event Timeline */}
+      <DecisionTimeline />
     </div>
   );
 };

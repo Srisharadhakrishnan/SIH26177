@@ -11,6 +11,8 @@ import {
   MapPin,
   Compass,
   Layers,
+  Footprints,
+  ShieldAlert,
 } from 'lucide-react';
 
 interface SearchMapProps {
@@ -24,11 +26,19 @@ export const SearchMap: React.FC<SearchMapProps> = ({ compact = false, interacti
     droneStatus,
     detections,
     hazards,
+    survivors,
+    selectedSurvivor,
+    getSafeRouteForSurvivor,
     selectedZoneId,
     setSelectedZoneId,
     setSelectedDetection,
     setActivePage,
   } = useMission();
+
+  // Active target survivor for safe responder route display
+  const activeSurv = selectedSurvivor || survivors.find((s) => s.verificationStatus !== 'REJECTED') || null;
+  const safeRoute = activeSurv ? getSafeRouteForSurvivor(activeSurv.id) : null;
+  const responderCorridor: ZoneId[] = safeRoute ? safeRoute.gridPath : [];
 
   // 3x3 rows
   const gridRows: ZoneId[][] = [
@@ -37,13 +47,12 @@ export const SearchMap: React.FC<SearchMapProps> = ({ compact = false, interacti
     ['C1', 'C2', 'C3'],
   ];
 
-  const getZone = (id: ZoneId): SearchZone | undefined => zones.find(z => z.id === id);
+  const getZone = (id: ZoneId): SearchZone | undefined => zones.find((z) => z.id === id);
+  const getZoneDetections = (id: ZoneId) => detections.filter((d) => d.zone === id && d.status !== 'DISMISSED');
+  const getZoneHazards = (id: ZoneId) => hazards.filter((h) => h.zone === id && h.status !== 'DISMISSED');
 
-  const getZoneDetections = (id: ZoneId) => detections.filter(d => d.zone === id && d.status !== 'DISMISSED');
-  const getZoneHazards = (id: ZoneId) => hazards.filter(h => h.zone === id && h.status !== 'DISMISSED');
-
-  const selectedZoneData = zones.find(z => z.id === selectedZoneId);
-  const selectedZoneVictims = selectedZoneId ? getZoneDetections(selectedZoneId).filter(d => d.type === 'Victim') : [];
+  const selectedZoneData = zones.find((z) => z.id === selectedZoneId);
+  const selectedZoneVictims = selectedZoneId ? getZoneDetections(selectedZoneId).filter((d) => d.type === 'Victim') : [];
   const selectedZoneHazardsList = selectedZoneId ? getZoneHazards(selectedZoneId) : [];
 
   return (
@@ -60,8 +69,15 @@ export const SearchMap: React.FC<SearchMapProps> = ({ compact = false, interacti
           </p>
         </div>
 
-        <div className="flex items-center space-x-1.5 text-xs text-slate-400">
-          <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-slate-800 border border-slate-700">
+        <div className="flex items-center space-x-2 text-xs">
+          {safeRoute && (
+            <span className="text-[10.5px] font-mono px-2 py-0.5 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-500/40 flex items-center gap-1">
+              <Footprints className="w-3 h-3 text-emerald-400" />
+              <span>Ground Ingress: {safeRoute.gridPath.join(' → ')}</span>
+            </span>
+          )}
+
+          <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">
             CUSTOM VECTOR GRID
           </span>
         </div>
@@ -70,7 +86,7 @@ export const SearchMap: React.FC<SearchMapProps> = ({ compact = false, interacti
       {/* Main Grid Map Area */}
       <div className="my-4 flex-1 flex flex-col justify-center">
         <div className="grid grid-cols-3 gap-3.5 max-w-2xl mx-auto w-full">
-          {gridRows.map((row, rowIndex) =>
+          {gridRows.map((row) =>
             row.map((zoneId) => {
               const zone = getZone(zoneId);
               const isDroneHere = droneStatus.currentZone === zoneId;
@@ -78,8 +94,14 @@ export const SearchMap: React.FC<SearchMapProps> = ({ compact = false, interacti
               const isSearched = zone?.status === 'searched';
               const isSelected = selectedZoneId === zoneId;
               const zoneDets = getZoneDetections(zoneId);
-              const victims = zoneDets.filter(d => d.type === 'Victim');
+              const victims = zoneDets.filter((d) => d.type === 'Victim');
               const zoneHaz = getZoneHazards(zoneId);
+
+              // Ground responder path properties
+              const isResponderRoute = responderCorridor.includes(zoneId);
+              const routeStepIndex = responderCorridor.indexOf(zoneId);
+              const isDestination = activeSurv?.zone === zoneId;
+              const hasSevereHazard = zoneHaz.some((h) => h.severity === 'CRITICAL' || h.type === 'Fire');
 
               // Route position sequence index (1 to 9)
               const routeOrder = SEARCH_ROUTE.indexOf(zoneId) + 1;
@@ -94,11 +116,13 @@ export const SearchMap: React.FC<SearchMapProps> = ({ compact = false, interacti
                   }}
                   className={`relative p-3.5 rounded-xl border-2 transition-all duration-300 flex flex-col justify-between min-h-[110px] cursor-pointer group ${
                     isSelected
-                      ? 'ring-2 ring-cyan-400 ring-offset-2 ring-offset-slate-950'
-                      : ''
-                  } ${
-                    isDroneHere
+                      ? 'border-indigo-400 bg-indigo-950/40 ring-2 ring-indigo-500/50 shadow-xl'
+                      : isDroneHere
                       ? 'border-cyan-400 bg-cyan-950/40 shadow-lg shadow-cyan-950/50'
+                      : isResponderRoute
+                      ? 'border-emerald-500/80 bg-emerald-950/30 shadow-md shadow-emerald-950/40'
+                      : hasSevereHazard
+                      ? 'border-amber-500/50 bg-amber-950/20'
                       : isSearching
                       ? 'border-cyan-500/60 bg-cyan-950/20 animate-pulse'
                       : isSearched
@@ -115,9 +139,24 @@ export const SearchMap: React.FC<SearchMapProps> = ({ compact = false, interacti
                       )}
                     </span>
 
-                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-900/90 text-slate-400 border border-slate-800">
-                      #{routeOrder}
-                    </span>
+                    <div className="flex items-center space-x-1">
+                      {isResponderRoute && (
+                        <span
+                          className={`text-[9px] font-mono px-1 py-0.2 rounded font-bold ${
+                            isDestination
+                              ? 'bg-rose-500 text-white animate-pulse'
+                              : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                          }`}
+                          title={`Ground Responder Path Step #${routeStepIndex + 1}`}
+                        >
+                          {isDestination ? 'GOAL' : `STEP #${routeStepIndex + 1}`}
+                        </span>
+                      )}
+
+                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-900/90 text-slate-400 border border-slate-800">
+                        #{routeOrder}
+                      </span>
+                    </div>
                   </div>
 
                   {/* Terrain type */}
@@ -135,7 +174,7 @@ export const SearchMap: React.FC<SearchMapProps> = ({ compact = false, interacti
                         />
                       </div>
                       <span className="text-[9px] font-mono font-bold text-cyan-300 bg-slate-950/90 px-1 rounded mt-0.5 shadow">
-                        RESQ-01
+                        {droneStatus.droneId}
                       </span>
                     </div>
                   )}
@@ -178,7 +217,7 @@ export const SearchMap: React.FC<SearchMapProps> = ({ compact = false, interacti
                     </div>
 
                     <span className="text-[9px] text-slate-400 font-mono">
-                      {isDroneHere ? 'ACTIVE' : isSearched ? 'DONE' : 'QUEUED'}
+                      {isDroneHere ? 'DRONE HERE' : isSearched ? 'SURVEYED' : 'PENDING'}
                     </span>
                   </div>
                 </div>
@@ -192,10 +231,10 @@ export const SearchMap: React.FC<SearchMapProps> = ({ compact = false, interacti
       <div className="pt-3 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-400">
         <div className="flex flex-wrap items-center gap-3">
           <span className="font-semibold text-slate-300 text-[11px] uppercase tracking-wider">Legend:</span>
-          
+
           <div className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
-            <span>DRONE (RESQ-01)</span>
+            <span>DRONE ({droneStatus.droneId})</span>
           </div>
 
           <div className="flex items-center gap-1.5">
@@ -209,97 +248,59 @@ export const SearchMap: React.FC<SearchMapProps> = ({ compact = false, interacti
           </div>
 
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded border border-emerald-500/60 bg-emerald-950/40"></span>
-            <span>SEARCHED</span>
-          </div>
-
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded border border-cyan-400 bg-cyan-950/50"></span>
-            <span>CURRENT SEARCH AREA</span>
+            <span className="w-2.5 h-2.5 rounded border border-emerald-400 bg-emerald-500/40"></span>
+            <span className="text-emerald-300 font-medium">RESPONDER GROUND CORRIDOR</span>
           </div>
         </div>
+
+        <span className="text-[10.5px] font-mono text-slate-500">
+          *Drone flies aerial path; ground responders follow green obstacle-avoidance corridor
+        </span>
       </div>
 
-      {/* Zone Detail Drawer / Inspection Panel if selected */}
-      {selectedZoneData && (
-        <div className="mt-4 p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-xs">
-          <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-800">
+      {/* Interactive Zone Inspector (when a zone is selected) */}
+      {interactive && selectedZoneData && (
+        <div className="mt-4 p-4 rounded-xl bg-slate-950/80 border border-slate-800 space-y-3">
+          <div className="flex items-center justify-between pb-2 border-b border-slate-800">
             <div className="flex items-center space-x-2">
               <MapPin className="w-4 h-4 text-cyan-400" />
-              <span className="font-bold text-slate-100 text-sm">{selectedZoneData.name}</span>
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">
-                Lat: {selectedZoneData.lat.toFixed(4)}°N, Lng: {selectedZoneData.lng.toFixed(4)}°E
-              </span>
+              <h4 className="text-sm font-bold text-white">
+                Sector Inspector: <span className="text-cyan-300">{selectedZoneData.id} ({selectedZoneData.name})</span>
+              </h4>
             </div>
-            <span className="text-slate-400">
+            <span className="text-xs font-mono text-slate-400">
               Terrain: <strong className="text-slate-200">{selectedZoneData.terrain}</strong>
             </span>
           </div>
 
-          {/* Detections in selected zone */}
-          <div className="mt-2.5 space-y-2">
-            {selectedZoneVictims.length > 0 ? (
-              <div className="space-y-1.5">
-                {selectedZoneVictims.map(vic => (
-                  <div
-                    key={vic.id}
-                    className="p-2.5 rounded-lg bg-rose-500/10 border border-rose-500/30 flex items-center justify-between"
-                  >
-                    <div>
-                      <div className="flex items-center space-x-2">
-                        <span className="font-bold text-rose-300">🚨 Victim Detected ({vic.subType})</span>
-                        <span className="text-[10px] font-mono px-1.5 py-0.5 bg-rose-600 text-white rounded font-black">
-                          {vic.confidence}% CONFIDENCE
-                        </span>
-                        <span className="text-slate-400 font-mono text-[10px]">{vic.timestamp}</span>
-                      </div>
-                      <p className="text-[11px] text-slate-300 mt-1">{vic.notes}</p>
-                    </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+            <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+              <span className="text-slate-400 block text-[10px]">Survey Status</span>
+              <span className="font-bold text-slate-200 capitalize font-mono text-sm">
+                {selectedZoneData.status}
+              </span>
+            </div>
 
-                    <button
-                      onClick={() => {
-                        setSelectedDetection(vic);
-                        setActivePage('detections');
-                      }}
-                      className="px-2.5 py-1 text-xs rounded bg-rose-600 hover:bg-rose-500 text-white font-semibold transition shrink-0 ml-3"
-                    >
-                      Inspect Victim
-                    </button>
-                  </div>
-                ))}
-              </div>
-            ) : selectedZoneHazardsList.length > 0 ? (
-              <div className="space-y-1.5">
-                {selectedZoneHazardsList.map(haz => (
-                  <div
-                    key={haz.id}
-                    className="p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-between"
-                  >
-                    <div>
-                      <div className="flex items-center space-x-2">
-                        <span className="font-bold text-amber-300">⚠️ Hazard: {haz.type}</span>
-                        <span className="text-[10px] font-mono px-1.5 py-0.5 bg-amber-500 text-black rounded font-black">
-                          {haz.confidence}% CONFIDENCE
-                        </span>
-                        <span className="text-slate-400 font-mono text-[10px]">{haz.timestamp}</span>
-                      </div>
-                      <p className="text-[11px] text-slate-300 mt-1">{haz.threatDescription}</p>
-                    </div>
+            <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+              <span className="text-slate-400 block text-[10px]">Victims Present</span>
+              <span className="font-bold text-rose-400 font-mono text-sm">
+                {selectedZoneVictims.length}
+              </span>
+            </div>
 
-                    <button
-                      onClick={() => setActivePage('hazards')}
-                      className="px-2.5 py-1 text-xs rounded bg-amber-500 hover:bg-amber-400 text-black font-semibold transition shrink-0 ml-3"
-                    >
-                      Inspect Hazard
-                    </button>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-slate-400 text-[11px] py-1">
-                No active victim or hazard anomalies recorded in this sector yet.
-              </div>
-            )}
+            <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+              <span className="text-slate-400 block text-[10px]">Active Hazards</span>
+              <span className="font-bold text-amber-400 font-mono text-sm">
+                {selectedZoneHazardsList.length}
+              </span>
+            </div>
+
+            <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+              <span className="text-slate-400 block text-[10px]">Coordinates</span>
+              <span className="font-bold text-slate-300 font-mono text-[11px]">
+                {selectedZoneData.lat.toFixed(4)}°N, {selectedZoneData.lng.toFixed(4)}°E
+              </span>
+            </div>
           </div>
         </div>
       )}

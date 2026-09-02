@@ -11,6 +11,7 @@ import {
   ShieldAlert,
   MapPin,
   Eye,
+  Zap,
 } from 'lucide-react';
 
 export const HazardsPage: React.FC = () => {
@@ -23,10 +24,17 @@ export const HazardsPage: React.FC = () => {
 
   const hazardTypeIcons: Record<Hazard['type'], React.ComponentType<{ className?: string }>> = {
     'Fire': Flame,
+    'Smoke': AlertTriangle,
+    'Flood': Waves,
     'Flooded Area': Waves,
     'Debris': Boxes,
     'Damaged Structure': Building2,
+    'Landslide': Boxes,
     'Vehicle': Car,
+    'Electrical Hazard': Zap,
+    'Exposed Electrical': Zap,
+    'Chemical Hazard': AlertTriangle,
+    'Chemical Leak': AlertTriangle,
   };
 
   return (

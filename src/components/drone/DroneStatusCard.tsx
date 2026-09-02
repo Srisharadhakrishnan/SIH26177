@@ -48,7 +48,7 @@ export const DroneStatusCard: React.FC = () => {
             </div>
             <p className="text-[11px] text-slate-400 flex items-center gap-1">
               <Shield className="w-3 h-3 text-cyan-400" />
-              <span>Simulated Autonomous Aerial Vehicle</span>
+              <span>SIMULATED FLIGHT TELEMETRY — No hardware connected</span>
             </p>
           </div>
         </div>

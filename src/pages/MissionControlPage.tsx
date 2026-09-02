@@ -10,6 +10,7 @@ import {
   Zap,
   UserPlus,
   Flame,
+  RefreshCw,
 } from 'lucide-react';
 
 export const MissionControlPage: React.FC = () => {
@@ -17,6 +18,7 @@ export const MissionControlPage: React.FC = () => {
     droneStatus,
     zones,
     simulateVictim,
+    simulateUncertainSurvivor,
     simulateHazard,
   } = useMission();
 
@@ -152,21 +154,30 @@ export const MissionControlPage: React.FC = () => {
                 </select>
               </div>
 
-              <div className="grid grid-cols-2 gap-2.5 pt-2">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-2">
                 <button
                   onClick={() => simulateVictim(customZone)}
-                  className="px-3 py-2.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md shadow-rose-950 transition"
+                  className="px-3 py-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-md shadow-rose-950 transition"
                 >
                   <UserPlus className="w-4 h-4" />
-                  <span>Spawn Victim at {customZone}</span>
+                  <span>Victim ({customZone})</span>
+                </button>
+
+                <button
+                  onClick={() => simulateUncertainSurvivor(customZone)}
+                  className="px-3 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-black text-xs font-bold flex items-center justify-center gap-1.5 shadow-md shadow-amber-950 transition"
+                  title="Test Autonomous Second-Look verification on uncertain silhouette"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                  <span>Uncertain ({customZone})</span>
                 </button>
 
                 <button
                   onClick={() => simulateHazard(customHazardType, customZone)}
-                  className="px-3 py-2.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md shadow-amber-950 transition"
+                  className="px-3 py-2 rounded-lg bg-orange-600 hover:bg-orange-500 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-md shadow-orange-950 transition"
                 >
                   <Flame className="w-4 h-4" />
-                  <span>Spawn Hazard at {customZone}</span>
+                  <span>Hazard ({customZone})</span>
                 </button>
               </div>
             </div>

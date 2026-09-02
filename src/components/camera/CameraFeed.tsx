@@ -39,11 +39,11 @@ export const CameraFeed: React.FC = () => {
             <div className="flex items-center space-x-2">
               <span className="text-xs font-bold text-slate-100 tracking-wider">LIVE SEARCH FEED</span>
               <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-400 border border-cyan-800/60 font-mono font-bold">
-                SIMULATION
+                SIMULATED SENSOR STREAM
               </span>
             </div>
             <p className="text-[10.5px] text-slate-400">
-              Downlink Stream • 1080p @ 30 FPS • YOLOv8 AI Detection Layer
+              Downlink Stream • 1080p @ 30 FPS • Simulated YOLOv8 AI Detection Layer
             </p>
           </div>
         </div>

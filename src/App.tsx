@@ -15,6 +15,7 @@ import { AlertsPage } from './pages/AlertsPage';
 import { MissionHistoryPage } from './pages/MissionHistoryPage';
 import { SystemStatusPage } from './pages/SystemStatusPage';
 import { SystemArchitecturePage } from './pages/SystemArchitecturePage';
+import { HardwareIntegrationPage } from './pages/HardwareIntegrationPage';
 
 const MainContent: React.FC = () => {
   const { activePage } = useMission();
@@ -41,6 +42,8 @@ const MainContent: React.FC = () => {
         return <SystemStatusPage />;
       case 'system_architecture':
         return <SystemArchitecturePage />;
+      case 'hardware_integration':
+        return <HardwareIntegrationPage />;
       default:
         return <DashboardPage />;
     }

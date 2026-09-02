@@ -128,9 +128,9 @@ export const SystemStatusPage: React.FC = () => {
       <div className="p-4 rounded-xl bg-cyan-950/40 border border-cyan-500/30 text-xs text-cyan-200 flex items-start space-x-3 shadow-lg">
         <ShieldCheck className="w-5 h-5 text-cyan-400 shrink-0 mt-0.5" />
         <div className="space-y-1">
-          <h4 className="font-bold text-white text-sm">Technical Transparency Guarantee</h4>
+          <h4 className="font-bold text-white text-sm">Technical Transparency Guarantee — JEEVAN-AIR (Team ZYNTAX)</h4>
           <p className="leading-relaxed text-slate-300">
-            This application is a <strong>software prototype</strong> demonstrating the core AI intelligence, autonomous search logic, and responder decision-making dashboard for SIH Problem Statement SIH26177. No physical drone, flight controller, or GPS hardware is claimed to be connected.
+            This application is the <strong>JEEVAN-AIR Software Prototype</strong> developed by <strong>TEAM ZYNTAX</strong> for Smart India Hackathon 2026 Problem Statement <strong>SIH26177</strong> (Qualcomm Inc). All drone telemetry, GPS positions, camera video feeds, and wireless links are <strong>SIMULATED</strong>. No physical drone hardware is currently claimed to be connected.
           </p>
         </div>
       </div>

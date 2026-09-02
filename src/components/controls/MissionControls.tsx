@@ -22,6 +22,7 @@ export const MissionControls: React.FC = () => {
     resetMission,
     startDemoMode,
     simulateVictim,
+    simulateUncertainSurvivor,
     simulateHazard,
     setManualOverride,
     isDemoRunning,
@@ -125,23 +126,32 @@ export const MissionControls: React.FC = () => {
       {/* Manual Simulation Triggers */}
       <div className="pt-2 border-t border-slate-800/80">
         <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">
-          Test Trigger Injections (Instant Simulation)
+          Test Trigger Injections (Rescue Intelligence Demo)
         </div>
-        <div className="grid grid-cols-2 gap-2.5">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
           <button
             onClick={() => simulateVictim()}
             className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg font-medium text-xs text-rose-300 bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 transition active:scale-[0.98]"
           >
             <UserPlus className="w-4 h-4 text-rose-400" />
-            <span>SIMULATE VICTIM</span>
+            <span>+ CRITICAL SURVIVOR</span>
+          </button>
+
+          <button
+            onClick={() => simulateUncertainSurvivor()}
+            className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg font-medium text-xs text-amber-300 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 transition active:scale-[0.98]"
+            title="Inject an uncertain detection to test Autonomous Second-Look verification"
+          >
+            <RefreshCw className="w-4 h-4 text-amber-400" />
+            <span>+ UNCERTAIN (2ND-LOOK)</span>
           </button>
 
           <button
             onClick={() => simulateHazard('Fire')}
-            className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg font-medium text-xs text-amber-300 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 transition active:scale-[0.98]"
+            className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg font-medium text-xs text-orange-300 bg-orange-500/15 hover:bg-orange-500/25 border border-orange-500/30 transition active:scale-[0.98]"
           >
-            <Flame className="w-4 h-4 text-amber-400" />
-            <span>SIMULATE HAZARD</span>
+            <Flame className="w-4 h-4 text-orange-400" />
+            <span>+ FIRE HAZARD</span>
           </button>
         </div>
       </div>

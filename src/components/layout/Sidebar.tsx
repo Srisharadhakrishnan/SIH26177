@@ -13,7 +13,8 @@ import {
   Activity,
   Layers,
   Info,
-  ShieldCheck
+  ShieldCheck,
+  Cpu,
 } from 'lucide-react';
 
 interface NavItem {
@@ -42,6 +43,7 @@ export const Sidebar: React.FC = () => {
     { id: 'mission_history', label: 'Mission History', icon: History },
     { id: 'system_status', label: 'System Status', icon: Activity },
     { id: 'system_architecture', label: 'System Architecture', icon: Layers },
+    { id: 'hardware_integration', label: 'HW Integration', icon: Cpu },
   ];
 
   return (
@@ -93,10 +95,10 @@ export const Sidebar: React.FC = () => {
       <div className="p-3.5 m-3 rounded-lg bg-slate-900/90 border border-slate-800/80 text-[11px] text-slate-400">
         <div className="flex items-center gap-1.5 text-cyan-400 font-semibold mb-1">
           <ShieldCheck className="w-3.5 h-3.5" />
-          <span>Prototype Environment</span>
+          <span>Software Prototype — TEAM ZYNTAX</span>
         </div>
         <p className="leading-relaxed text-[10.5px] text-slate-400">
-          Hardware components (Flight Controller, GPS, Camera) are <strong className="text-slate-200 font-semibold">simulated</strong> for demonstration. Real sensors integrate in Stage 2.
+          Hardware (Flight Controller, GPS, Camera) is <strong className="text-slate-200 font-semibold">simulated</strong>. JEEVAN-AIR · SIH26177 · Qualcomm Inc.
         </p>
       </div>
     </aside>

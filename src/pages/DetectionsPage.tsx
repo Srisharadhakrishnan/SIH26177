@@ -12,6 +12,7 @@ import {
 export const DetectionsPage: React.FC = () => {
   const {
     detections,
+    survivors,
     setSelectedDetection,
     markDetectionVerified,
     dismissDetection,
@@ -179,9 +180,19 @@ export const DetectionsPage: React.FC = () => {
                       <td className="py-3 px-4 font-mono text-slate-400">{det.timestamp}</td>
 
                       <td className="py-3 px-4">
-                        <span className={`px-2 py-0.5 rounded text-[10.5px] font-bold border ${getPriorityBadge(det.priority)}`}>
-                          {det.priority}
-                        </span>
+                        <div className="flex items-center space-x-1.5">
+                          {(() => {
+                            const matched = isVictim ? survivors.find(s => s.id === det.id || s.id === `SURV-${det.id.slice(-4)}`) : null;
+                            return matched?.priorityRank ? (
+                              <span className="w-5 h-5 rounded-full bg-indigo-600 text-white font-mono font-black text-[10px] flex items-center justify-center shrink-0" title={`Rescue Priority #${matched.priorityRank}`}>
+                                #{matched.priorityRank}
+                              </span>
+                            ) : null;
+                          })()}
+                          <span className={`px-2 py-0.5 rounded text-[10.5px] font-bold border ${getPriorityBadge(det.priority)}`}>
+                            {det.priority}
+                          </span>
+                        </div>
                       </td>
 
                       <td className="py-3 px-4">

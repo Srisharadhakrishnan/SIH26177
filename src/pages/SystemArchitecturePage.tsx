@@ -96,7 +96,7 @@ export const SystemArchitecturePage: React.FC = () => {
         </div>
 
         <span className="text-xs font-mono px-3 py-1 rounded bg-slate-900 border border-slate-800 text-slate-300">
-          SIH26177 System Blueprint
+          JEEVAN-AIR · TEAM ZYNTAX · SIH26177
         </span>
       </div>
 
@@ -106,10 +106,10 @@ export const SystemArchitecturePage: React.FC = () => {
         <div className="bg-slate-900/90 border border-cyan-500/40 rounded-xl p-5 shadow-xl space-y-2">
           <div className="flex items-center space-x-2 text-cyan-400 font-bold text-sm">
             <CheckCircle2 className="w-4 h-4" />
-            <span>CURRENT PROTOTYPE (Stage 1)</span>
+            <span>CURRENT SOFTWARE PROTOTYPE (Phase 1)</span>
           </div>
           <p className="text-xs text-slate-300 leading-relaxed">
-            Drone flight, GPS telemetry, camera feed, and wireless communications are mathematically <strong>simulated</strong>. The software prototype fully implements the autonomous search logic, AI detection visualization, alert dispatching, and responder decision interface.
+            Drone flight, GPS telemetry, camera feed, and wireless communications are mathematically <strong>simulated</strong> via the Simulation Data Adapter. The software prototype fully implements the autonomous search logic, Common Data Model, alert dispatching, and responder decision interface.
           </p>
         </div>
 
@@ -117,10 +117,10 @@ export const SystemArchitecturePage: React.FC = () => {
         <div className="bg-slate-900/90 border border-indigo-500/40 rounded-xl p-5 shadow-xl space-y-2">
           <div className="flex items-center space-x-2 text-indigo-400 font-bold text-sm">
             <Sparkles className="w-4 h-4" />
-            <span>NEXT STAGE (Hardware Integration)</span>
+            <span>FUTURE HARDWARE INTEGRATION (Phase 4)</span>
           </div>
           <p className="text-xs text-slate-300 leading-relaxed">
-            Integrate the tested software with a physical quadcopter drone, Pixhawk flight controller, u-blox NEO GPS, 4K/thermal camera, Raspberry Pi / Jetson edge computer, and long-range RF telemetry link.
+            Integrate the tested software with a physical quadcopter drone, Pixhawk flight controller via MAVLink, u-blox NEO GNSS, 4K optical & LWIR thermal camera payloads, and an onboard Edge AI computer (Jetson Orin Nano / Raspberry Pi 5).
           </p>
         </div>
       </div>
